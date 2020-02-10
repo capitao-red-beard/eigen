@@ -45,6 +45,9 @@ def find_sentance_containing_word(data, word):
 
     return sentances
 
+def word_in_document(word, document):
+    pass
+
 for one_file in get_file_paths(test_data_path):
     file_name = stored_data_path + os.path.basename(one_file).split('.')[0] + '.json'
 
