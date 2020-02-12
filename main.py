@@ -61,39 +61,39 @@ def get_word_count(data):
 
     return sorted_word_count
 
-def get_sentances_containing_word(data, word):
+def get_sentances_containing_word(word, data):
     search = r"([^.]*?" + word + r"[^.]*\.)"
-    sentances = re.findall(search, data)
+
+    for d in data:
+        for k, v in d.items():
+            sentances = re.findall(search, str(v))
 
     return sentances
 
-def word_in_document(documents):
-    doc_map = {}
-
-    for d in documents:
-        for k, v in d.items():
-            for word in v.split():
-                if word not in doc_map:
-                    doc_map[word] = []
-
-                if k not in doc_map[word]:
-                 doc_map[word].append(k)
+def get_word_in_document(word, data):
+    docs = []
     
-    return doc_map
+    for d in data:
+        for k, v in d.items():
+            for w in v.split():
+                if w == word and k not in docs:
+                    docs.append(k)
+        
+    return docs
                
 
 data = load_data()
+# print(data)
 
-print(word_in_document(data))
+word_count = get_word_count(data)
 
+final_data = []
 
-words = {
-    'word': '',
-    'count': '',
-    'documents': '',
-    'sentances': '',
-}
+for w in word_count:
+    word = w[0]
+    count = w[1]
+    documents = get_word_in_document(w[0], data)
+    sentances = get_sentances_containing_word(w[0], data)
+    final_data.append(Word(word, count, documents, sentances))
 
-# word_count_data = get_word_count(data)
-
-# print(word_count_data)
+print(final_data)
