@@ -13,8 +13,9 @@ STORED_DATA_PATH = r'./json_data/'
 class Word:
     word: str
     count: int
-    sentances: list
     documents: list
+    sentances: list
+    
 
 
 def get_file_paths(directory):
@@ -49,9 +50,8 @@ def get_word_count(data):
         for k, v in d.items():
             for word in v.split():
                 if word not in word_count:
-                    word_count[word] = 1
-                else:
-                    word_count[word] += 1
+                    word_count[word] = 0
+                word_count[word] += 1
     
     sorted_word_count = sorted(
         word_count.items(), 
@@ -67,12 +67,33 @@ def get_sentances_containing_word(data, word):
 
     return sentances
 
-def word_in_document(word, documents):
-    pass
+def word_in_document(documents):
+    doc_map = {}
 
+    for d in documents:
+        for k, v in d.items():
+            for word in v.split():
+                if word not in doc_map:
+                    doc_map[word] = []
+
+                if k not in doc_map[word]:
+                 doc_map[word].append(k)
+    
+    return doc_map
+               
 
 data = load_data()
 
-word_count_data = get_word_count(data)
+print(word_in_document(data))
 
-print(word_count_data)
+
+words = {
+    'word': '',
+    'count': '',
+    'documents': '',
+    'sentances': '',
+}
+
+# word_count_data = get_word_count(data)
+
+# print(word_count_data)
