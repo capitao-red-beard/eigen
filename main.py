@@ -63,7 +63,9 @@ def get_word_count(data: List[Dict[str, str]]) -> List[Tuple[str, int]]:
     for d in data:
         for k, v in d.items():
             # Split based on words only, remove the punctuation from the text, lower-case.
-            s = re.split(r"\W+", v.translate(str.maketrans("", "", string.punctuation)).lower())
+            s = re.split(
+                r"\W+", v.translate(str.maketrans("", "", string.punctuation)).lower()
+            )
             for word in s:
                 if word not in word_count:
                     word_count[word] = 0
@@ -106,7 +108,9 @@ def get_document_names_containing_word(
     for d in data:
         for k, v in d.items():
             # Split based on words only, remove the punctuation from the text, lower-case.
-            s = re.split(r"\W+", v.translate(str.maketrans("", "", string.punctuation)).lower())
+            s = re.split(
+                r"\W+", v.translate(str.maketrans("", "", string.punctuation)).lower()
+            )
             for w in s:
                 # We want to prevent that the name of the document will get added multiple times.
                 if w == word and k not in seen:
@@ -119,9 +123,10 @@ def get_document_names_containing_word(
 
 
 if __name__ == "__main__":
-
+    # This is the list containing the `Word` objects we create from our chosen `words_list` below.
     final_data: List[Word] = []
 
+    # This list contains the words which will be made into `Word` objects.
     word_list = [
         "audacity",
         "homegrown",
@@ -138,9 +143,14 @@ if __name__ == "__main__":
         "recommendation",
     ]
 
+    # Load the data into our project.
     loaded_data = load_data()
+
+    # Get the word count for our data.
     word_count = get_word_count(loaded_data)
 
+    # Loop through the `word_count` list and if the word we encounter is in the list we will create
+    # a word object for it.
     for w in word_count:
         if w[0] in word_list:
             word = w[0]
@@ -151,5 +161,6 @@ if __name__ == "__main__":
 
             final_data.append(Word(word, count, documents, sentences))
 
-    for i, f in enumerate(final_data):
-        print(i, f)
+    # Print out the final `word` objects we created from the test data.
+    for f in final_data:
+        print(f)
