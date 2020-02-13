@@ -15,4 +15,6 @@
 - Either way to install the requirements use the command: `pip3 install -r requirements.txt`
 ###### ---------- Not Required ----------
 4. Run the program using the command `python3 main.py`
+
+## Tips
 - If you wish to choose a different list of words for output please edit the `word_list` on line **130**.
