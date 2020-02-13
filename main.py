@@ -1,25 +1,31 @@
-import json
 import os
-import pprint
 import re
+import string
 from dataclasses import dataclass
+from typing import Dict, List, Tuple
 
 TEST_DATA_PATH = r"./eigen_task/test_docs/"
-STORED_DATA_PATH = r"./json_data/"
-
-pp = pprint.PrettyPrinter(indent=4)
 
 
 @dataclass
 class Word:
+    """
+    This is a dataclass which encapsulates the data associated with a word from the test data.
+    """
+
     word: str
     count: int
     documents: list
-    sentances: list
+    sentences: list
 
 
-def get_file_paths(directory):
-    files = []
+def get_file_paths(directory: str) -> List[str]:
+    """
+    This function takes a directory path as parameter and finds all the files with `.txt` extension
+    which are in that directory.
+    """
+
+    files: List = []
 
     for dirpath, _, file_names in os.walk(directory):
         for f in file_names:
@@ -29,27 +35,36 @@ def get_file_paths(directory):
     return files
 
 
-def load_data():
-    data = []
+def load_data(path=TEST_DATA_PATH) -> List[Dict[str, str]]:
+    """
+    This function takes as default the location of the test files as parameter, it then collects the
+    data inside of the files and adds them to a list of dictionary objects.
+    """
 
-    for one_file in get_file_paths(TEST_DATA_PATH):
-        with open(file=one_file, mode="r", encoding="utf-8") as f:
-            data.append({os.path.splitext(os.path.basename(one_file))[0]: f.read()})
+    data: List = []
+
+    for f in get_file_paths(path):
+        with open(file=f, mode="r", encoding="utf-8") as fp:
+            # The dict keys in this case are the names of the files and the values are the contents.
+            data.append({os.path.splitext(os.path.basename(f))[0]: fp.read()})
 
     return data
 
 
-def output_data_to_json_file(file_name, data):
-    with open(file=file_name, mode="w", encoding="utf-8") as f:
-        json.dump(data, f)
+def get_word_count(data: List[Dict[str, str]]) -> List[Tuple[str, int]]:
+    """
+    This function finds the number of times a word was used in a list of dicts containing data.
 
+    The number of times a word was used is then returned in a sorted way.
+    """
 
-def get_word_count(data):
-    word_count = {}
+    word_count: Dict[str, int] = {}
 
     for d in data:
         for k, v in d.items():
-            for word in v.split():
+            # Split based on words only, remove the punctuation from the text, lower-case.
+            s = re.split(r"\W+", v.translate(str.maketrans("", "", string.punctuation)).lower())
+            for word in s:
                 if word not in word_count:
                     word_count[word] = 0
                 word_count[word] += 1
@@ -59,19 +74,45 @@ def get_word_count(data):
     return sorted_word_count
 
 
-def get_sentances_containing_word(word, data):
-    sentances = re.findall(r"([^.]*? %s [^.]*\.)" % word, data)
+def get_sentences_containing_word(word: str, data: List[Dict[str, str]]) -> List[str]:
+    """
+    This function finds all of the sentences a word appears in across a given list of dicts of data.
+    """
 
-    return sentances
-
-
-def get_word_in_document(word, data):
-    docs = []
+    sentences: List[List[str]] = []
+    regex = fr"([^.]*?{word}[^.]*\.)"
 
     for d in data:
         for k, v in d.items():
-            for w in v.split():
-                if w == word and k not in docs:
+            sentences.append(re.findall(regex, v.lower()))
+
+    # Because we are looping through a list to create one we end up with a kind of 2D structure,
+    # we can use list comprehension to "flatten" it out; i.e. [[str], [str]] -> [str, str].
+    flat_list = [sub for sub_list in sentences for sub in sub_list]
+
+    return flat_list
+
+
+def get_document_names_containing_word(
+    word: str, data: List[Dict[str, str]]
+) -> List[str]:
+    """
+    This function is used to get the names of all the documents which contain a given word.
+    """
+
+    docs: List[str] = []
+    seen = set(docs)
+
+    for d in data:
+        for k, v in d.items():
+            # Split based on words only, remove the punctuation from the text, lower-case.
+            s = re.split(r"\W+", v.translate(str.maketrans("", "", string.punctuation)).lower())
+            for w in s:
+                # We want to prevent that the name of the document will get added multiple times.
+                if w == word and k not in seen:
+                    # We use a set here because it is more efficient than checking the list,
+                    # using `in` for a list runs in O(n) as opposed to O(1) for sets.
+                    seen.add(k)
                     docs.append(k)
 
     return docs
@@ -79,7 +120,7 @@ def get_word_in_document(word, data):
 
 if __name__ == "__main__":
 
-    final_data = []
+    final_data: List[Word] = []
 
     word_list = [
         "audacity",
@@ -93,7 +134,7 @@ if __name__ == "__main__":
         "progress",
         "corruption",
         "promise",
-        "Iraq",
+        "iraq",
         "recommendation",
     ]
 
@@ -102,19 +143,13 @@ if __name__ == "__main__":
 
     for w in word_count:
         if w[0] in word_list:
-            sentances = []
             word = w[0]
             count = w[1]
 
-            documents = get_word_in_document(w[0], loaded_data)
+            documents = get_document_names_containing_word(w[0], loaded_data)
+            sentences = get_sentences_containing_word(w[0], loaded_data)
 
-            for d in loaded_data:
-                for k, v in d.items():
-                    s = get_sentances_containing_word(w[0], v)
-                    if len(s) != 0:
-                        sentances.append(s)
+            final_data.append(Word(word, count, documents, sentences))
 
-            final_data.append(Word(word, count, documents, sentances))
-
-    for f in final_data:
-        pp.pprint(f)
+    for i, f in enumerate(final_data):
+        print(i, f)
