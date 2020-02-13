@@ -12,9 +12,9 @@
 3. Activate your virtual environment using the command: `$ source venv/bin/activate`
 ###### ---------- Not Required ----------
 - Although this particular project makes **no** use of external libraries, I have included a `requirements.txt` file should this change.
-- Either way to install the requirements use the command: `pip3 install -r requirements.txt`
+- Either way to install the requirements use the command: `$ pip3 install -r requirements.txt`
 ###### ---------- Not Required ----------
-4. Run the program using the command `python3 main.py`
+4. Run the program using the command `$ python3 main.py`
 
 ### Tips
 - If you wish to choose a different list of words for output please edit the `word_list` on line **130**.
