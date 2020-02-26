@@ -4,7 +4,7 @@ import string
 from dataclasses import dataclass
 from typing import Dict, List, Tuple
 
-TEST_DATA_PATH = r"./eigen_task/test_docs/"
+TEST_DATA_PATH = r"./test_docs/"
 
 
 @dataclass
