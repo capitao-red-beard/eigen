@@ -1,8 +1,7 @@
-# Eigen Back-End Coding Test
+# Word Parser
 
 - **Name:** Jasper van der Valk
 - **Date:** 13/02/2020
-- **Time Taken to Complete:** ~3 Hours
 - **Written Using:** Python 3.8 (**WARNING** this project makes use of `dataclasses` so can only be run with Python 3.7+)
 - **Developed On:** Linux Ubuntu 18.04 (Instructions on getting started will reflect this)
 
